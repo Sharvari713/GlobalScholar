@@ -1,0 +1,33 @@
+.dashboard {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .dashboard h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard p {
+    font-size: 1.2em;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard button {
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .dashboard button:hover {
+    background-color: #c82333;
+  }
+  
