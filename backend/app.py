@@ -36,7 +36,7 @@ def get_university_names():
         cursor.close()
         conn.close()
 # Route for User Registration
-@app.route('/register', methods=['POST'])
+'''@app.route('/register', methods=['POST'])
 def register_user():
     data = request.json
     first_name = data.get('FirstName')
@@ -54,6 +54,69 @@ def register_user():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+
+        # Check if user already exists
+        cursor.execute("SELECT * FROM User WHERE EmailId = %s", (email_id,))
+        if cursor.fetchone():
+            return jsonify({'error': 'User already exists!'}), 409
+
+        # Insert new user into the User table
+        user_query = """
+            INSERT INTO User (FirstName, LastName, EmailId, Password, TuitionFeeBudget, AccommodationBudget)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(user_query, (first_name, last_name, email_id, password, tuition_fee_budget, accommodation_budget))
+        user_id = cursor.lastrowid
+
+        # Insert selected universities into User_UnivShortlist table
+        univ_query = "INSERT INTO User_UnivShortlist (UserId, UniversityName) VALUES (%s, %s)"
+        for college in selected_colleges:
+            cursor.execute(univ_query, (user_id, college))
+
+        conn.commit()
+        return jsonify({'message': 'User registered successfully!'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+'''
+@app.route('/register', methods=['POST'])
+def register_user():
+    data = request.json
+    first_name = data.get('FirstName')
+    last_name = data.get('LastName')
+    email_id = data.get('EmailId')
+    password = data.get('Password')
+    tuition_fee_budget = data.get('TuitionFeeBudget', 0)
+    accommodation_budget = data.get('AccommodationBudget', 0)
+    selected_colleges = data.get('SelectedColleges', [])
+
+    # Application-level validation
+    # Check required fields
+    if not all([email_id, password, first_name]):
+        return jsonify({'error': 'Email, password, and first name are required!'}), 400
+
+    # Validate budgets
+    if not (200 <= accommodation_budget <= 22000):
+        return jsonify({'error': 'Accommodation budget must be between 200 and 22000!'}), 400
+
+    if not (0 <= tuition_fee_budget <= 60000):
+        return jsonify({'error': 'Tuition fee budget must be between 0 and 60000!'}), 400
+
+    # Ensure selected colleges exist in the database
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Fetch valid university names
+        cursor.execute("SELECT UniversityName FROM University")
+        valid_universities = {row[0] for row in cursor.fetchall()}
+
+        # Check if all selected colleges are valid
+        invalid_colleges = [college for college in selected_colleges if college not in valid_universities]
+        if invalid_colleges:
+            return jsonify({'error': f'Invalid universities selected: {invalid_colleges}'}), 400
 
         # Check if user already exists
         cursor.execute("SELECT * FROM User WHERE EmailId = %s", (email_id,))
