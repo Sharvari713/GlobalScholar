@@ -26,7 +26,8 @@ const Login = () => {
 
       // If login is successful
       if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user info
+        localStorage.setItem("user", response.data.user.FirstName); // Store user info
+        localStorage.setItem("userId", response.data.user.Id); // global variable 
         navigate("/dashboard"); // Redirect to the dashboard or the next page
       }
     } catch (error) {

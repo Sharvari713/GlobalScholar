@@ -4,19 +4,22 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
-  const username = localStorage.getItem("username");
+  const username = localStorage.getItem("user");
 
   const handleLogout = () => {
-    localStorage.removeItem("username"); // Remove user info on logout
-    navigate("/login"); // Redirect to login page
+    localStorage.removeItem("user"); 
+    navigate("/login"); 
   };
+
+  const handleAnalysis = () =>{
+    navigate("/analysis");
+  }
 
   return (
     <header className="bg-light py-3 px-4">
       <div className="container d-flex justify-content-between align-items-center">
         {/* Site Name */}
         <div className="fs-3 fw-bold text-primary">Global Scholar</div>
-
         {/* Conditionally render buttons or user's name */}
         <div>
           {!username ? (
@@ -36,7 +39,13 @@ const Header = () => {
             </>
           ) : (
             <>
-              <span className="fs-5">Hi, {username}!</span>
+              <button 
+                className="btn btn-outline ms-3"
+                onClick={handleAnalysis}
+              >
+                Analysis
+              </button>
+              {/* <span className="fs-5">Hi, {username}!</span> */}
               <button
                 className="btn btn-danger ms-3"
                 onClick={handleLogout}

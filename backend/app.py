@@ -5,7 +5,18 @@ from db_config import DB_CONFIG
 
 
 app = Flask(__name__)
-CORS(app)  # This will allow cross-origin requests from any origin
+CORS(app, resources={r"/*": {"origins": "*"}})
+  # This will allow cross-origin requests from any origin
+
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = app.response_class()
+        response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        return response
+
 
 # Connect to MySQL database
 def get_db_connection():
@@ -86,7 +97,7 @@ def register_user():
     data = request.json
     first_name = data.get('FirstName')
     last_name = data.get('LastName')
-    email_id = data.get('EmailId')
+    email_id = data.get('EmailId')  
     password = data.get('Password')
     tuition_fee_budget = data.get('TuitionFeeBudget', 0)
     accommodation_budget = data.get('AccommodationBudget', 0)
@@ -171,6 +182,109 @@ def login_user():
     finally:
         cursor.close()
         conn.close()
+
+# Route for getting user info 
+@app.route('/userInfo/<int:id>', methods=['GET'])
+def get_user_info(id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Fetch user details
+        user_query = """
+            SELECT FirstName, LastName, EmailId, TuitionFeeBudget, AccommodationBudget
+            FROM User
+            WHERE Id = %s
+        """
+        cursor.execute(user_query, (id,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({'error': 'User not found!'}), 404
+
+        # Fetch universities selected by the user
+        univ_query = """
+            SELECT UniversityName
+            FROM User_UnivShortlist
+            WHERE UserId = %s
+        """
+        cursor.execute(univ_query, (id,))
+        universities = [row[0] for row in cursor.fetchall()]
+
+        # Construct user info response
+        user_info = {
+            'FirstName': user[0],
+            'LastName': user[1],
+            'EmailId': user[2],
+            'TuitionFeeBudget': user[3],
+            'AccommodationBudget': user[4],
+            'SelectedUniversities': universities
+        }
+
+        return jsonify(user_info), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/updateUniversity', methods=['POST'])
+def update_universities():
+    data = request.json
+    user_id = data.get('userId')
+    old = data.get('oldUniversity')
+    new = data.get('updatedUniversity')
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Update the university name in User_UnivShortlist
+        update_query = """
+            UPDATE User_UnivShortlist
+            SET UniversityName = %s
+            WHERE UserId = %s AND UniversityName = %s
+        """
+        cursor.execute(update_query, (new, user_id, old))
+
+        # Check if the update affected any rows
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'No matching university found for the update.'}), 404
+
+        conn.commit()
+        return jsonify({'message': 'University updated successfully!'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/removeUniversity', methods=['POST'])
+def delete_universities():
+    data = request.json
+    user_id = data.get('UserId')
+    UnivDelete = data.get('university')
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Delete specified universities from User_UnivShortlist
+        delete_query = """
+            DELETE FROM User_UnivShortlist 
+            WHERE UserId = %s AND UniversityName = %s
+        """
+        cursor.execute(delete_query, (user_id, UnivDelete))
+
+        conn.commit()
+        return jsonify({'message': 'Selected universities deleted successfully!'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
