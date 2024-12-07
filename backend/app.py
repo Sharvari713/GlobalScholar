@@ -286,5 +286,59 @@ def delete_universities():
         conn.close()
 
 
+# @app.route('/getUniversityDetails/<int:Id>', methods=['GET'])
+# def get_university_details(Id):
+#     try:
+#         # Connect to the database
+#         conn = get_db_connection()
+#         cursor = conn.cursor(buffered=True)
+
+#         sp_query = f"CALL GetUniversityDetails({Id});"
+
+#         cursor.execute(sp_query)
+#         while cursor.nextset():
+#             pass  
+#         results = cursor.fetchall()
+
+#         column_names = [desc[0] for desc in cursor.description]
+#         universities_details = [dict(zip(column_names, row)) for row in results]
+#         while cursor.nextset():
+#             pass
+
+#         print(universities_details)
+#         return jsonify(universities_details), 200
+
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+#     finally:
+#         cursor.close()
+#         conn.close()
+
+@app.route('/getUniversityDetails/<int:Id>', methods=['GET'])
+def get_university_details(Id):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Use callproc instead of execute for stored procedures
+        cursor.callproc('GetUniversityDetails', [Id])
+        
+        # Fetch results from the first result set
+        results = next(cursor.stored_results())
+        universities_details = results.fetchall()
+        print(universities_details)
+        return jsonify(universities_details), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

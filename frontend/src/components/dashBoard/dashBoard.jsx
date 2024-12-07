@@ -11,8 +11,8 @@ const Dashboard = () => {
   const [errors, setErrors] = useState({});
   const [universities, setUniversities] = useState([]); // Initialize as an empty array
   const [universityOptions, setUniversityOptions] = useState([]); // All available universities
-  const [editIndex, setEditIndex] = useState(null); // To track which university is being edited
-  const [selectedUniversity, setSelectedUniversity] = useState(null); // Selected university for editing
+  const [editIndex, setEditIndex] = useState(null); 
+  const [selectedUniversity, setSelectedUniversity] = useState(null); 
 
   const username = localStorage.getItem("user");
   const userId = localStorage.getItem("userId");

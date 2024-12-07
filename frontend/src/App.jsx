@@ -5,6 +5,7 @@ import Login from './components/login/login';
 import Register from './components/registration/registration';
 import Header from './components/header/header';
 import Dashboard from './components/dashBoard/dashBoard';
+import Analysis from './components/analysis/analysis';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashBoard" element={<Dashboard/>}/>
+        <Route path="/analysis" element={<Analysis/>}/>
         <Route path="/" element={<h1>Welcome to Global Scholar!</h1>} />
       </Routes>
     </Router>

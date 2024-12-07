@@ -1,6 +1,8 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import './header.css';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ const Header = () => {
     <header className="bg-light py-3 px-4">
       <div className="container d-flex justify-content-between align-items-center">
         {/* Site Name */}
-        <div className="fs-3 fw-bold text-primary">Global Scholar</div>
+        <Link to="/dashboard" className="fs-3 fw-bold text-primary text-decoration-none">Global Scholar</Link>
         {/* Conditionally render buttons or user's name */}
         <div>
           {!username ? (
