@@ -57,9 +57,9 @@ const Analysis = () => {
             `http://localhost:5001/getUniversityDetails/${userId}`
           );
           const transformedData = response.data.map((item) => ({
-            UniversityName: item[0],
-            RoomAndBoardCost: item[1],
-            OutOfStateTuitionFees: item[2],
+            UniversityName: item['UniversityName'],
+            RoomAndBoardCost: item['RoomAndBoardCost'],
+            OutOfStateTuitionFees: item['OutOfStateTuitionFees'],
           }));
 
           setAnalysisData(transformedData);
@@ -175,7 +175,7 @@ const Analysis = () => {
                 alignItems: "center",
               }}
             >
-              <h4>Total Budget</h4>
+              <h4>Total Cost</h4>
               <div style={{ height: "200px", width: "100%" }}>
                 <Bar
                   data={{

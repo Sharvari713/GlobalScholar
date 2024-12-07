@@ -114,12 +114,17 @@ const Dashboard = () => {
     navigate("/login");
   };
 
+  const handleGetMatchingUniversities = () => {
+    navigate('/matching-universities');
+  };
+
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
       <p>Welcome, {username || "Guest"}!</p>
 
       {errors.fetch && <p style={{ color: "red" }}>{errors.fetch}</p>}
+      <button onClick={handleGetMatchingUniversities}>Get all matching universities</button>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>

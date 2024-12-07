@@ -263,7 +263,7 @@ def update_universities():
 @app.route('/removeUniversity', methods=['POST'])
 def delete_universities():
     data = request.json
-    user_id = data.get('UserId')
+    user_id = data.get('userId')
     UnivDelete = data.get('university')
 
     try:
@@ -330,6 +330,28 @@ def get_university_details(Id):
         universities_details = results.fetchall()
         print(universities_details)
         return jsonify(universities_details), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/matching-universities/<int:user_id>', methods=['GET'])
+def get_matching_universities(user_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Execute the stored procedure using raw SQL
+        cursor.execute("CALL GetMatchingUniversities(%s)", (user_id,))
+
+        # Fetch all results
+        matching_universities = cursor.fetchall()
+
+        return jsonify(matching_universities), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
