@@ -362,5 +362,32 @@ def get_matching_universities(user_id):
             conn.close()
 
 
+@app.route('/getUserLivingCosts/<int:user_id>', methods=['GET'])
+def get_user_living_costs(user_id):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Raw SQL query to execute the stored procedure
+        query = """
+            CALL GetUserLivingCosts(%s)
+        """
+        cursor.execute(query, (user_id,))
+
+        # Fetch results from the stored procedure
+        living_costs = cursor.fetchall()
+
+        return jsonify(living_costs), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
