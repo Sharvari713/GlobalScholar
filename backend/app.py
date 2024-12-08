@@ -361,6 +361,28 @@ def get_matching_universities(user_id):
         if conn:
             conn.close()
 
+@app.route('/matching-universities/search/<int:user_id>/<string:key_word>', methods=['GET'])
+def search_matching_universities(user_id, key_word):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Execute the stored procedure to fetch universities matching the user budget and search keyword
+        cursor.execute("CALL SearchMatchingUniversities(%s, %s)", (user_id, key_word))
+
+        # Fetch all results
+        matching_universities = cursor.fetchall()
+
+        return jsonify(matching_universities), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
