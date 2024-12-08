@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import './AdminPage.css';
 
 const AdminPage = () => {
@@ -8,6 +10,12 @@ const AdminPage = () => {
   const [editedUniversity, setEditedUniversity] = useState({}); // Store edited university details
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [universityToDelete, setUniversityToDelete] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleViewTransactionResult = () => {
+    navigate('/Lowerbudgettran'); // Navigate to the Transaction Result page
+  };
 
   useEffect(() => {
     fetch('http://localhost:5001/university-details')
@@ -97,8 +105,12 @@ const AdminPage = () => {
 
   return (
     <div className="admin-page">
-      <h1>University Details</h1>
+      <h1>Users with lower budget</h1>
 
+      <button onClick={handleViewTransactionResult}>View Users</button>
+     <p></p>
+     <p></p>
+      <h1>University Details</h1>
       {/* Search bar */}
       <input
         type="text"

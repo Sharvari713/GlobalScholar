@@ -496,5 +496,97 @@ def get_state_details(state):
         if conn:
             conn.close()
 
+
+
+@app.route('/transaction-result', methods=['GET'])
+def get_transaction_result():
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Set the isolation level for the transaction
+        cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;")
+
+        # Start a transaction
+        cursor.execute("START TRANSACTION;")
+
+        # First query: Fetch users with tuition budgets below the average in-state tuition fees
+        query1 = """
+            SELECT U.FirstName, U.LastName, U.TuitionFeeBudget, 
+                   (SELECT AVG(InStateTuitionFees) FROM TuitionFees) AS avg_state_tuition
+            FROM User U
+            JOIN User_UnivShortlist US ON U.Id = US.UserId
+            JOIN TuitionFees T ON US.UniversityName = T.UniversityName
+            WHERE U.TuitionFeeBudget < (SELECT AVG(InStateTuitionFees) FROM TuitionFees);
+        """
+        cursor.execute(query1)
+        result1 = cursor.fetchall()
+
+        # Commit the transaction
+        cursor.execute("COMMIT;")
+
+        return jsonify({'result': result1, 'message': 'Transaction executed successfully!'}), 200
+
+    except Exception as e:
+        # Rollback the transaction in case of an error
+        if conn:
+            cursor.execute("ROLLBACK;")
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+
+
+# @app.route('/Lowerbudgettran', methods=['GET'])
+# def get_transaction_result():
+#     conn = None
+#     cursor = None
+#     try:
+#         conn = get_db_connection()
+#         cursor = conn.cursor(dictionary=True)
+
+#         # Start a transaction
+#         cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+#         conn.start_transaction()
+#         # cursor.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+
+#         # First query: Fetch users with tuition budgets below the average in-state tuition fees
+#         query1 = """
+#             SELECT U.FirstName, U.LastName, U.TuitionFeeBudget, 
+#                    (SELECT AVG(InStateTuitionFees) FROM TuitionFees) AS avg_state_tuition
+#             FROM User U
+#             JOIN User_UnivShortlist US ON U.Id = US.UserId
+#             JOIN TuitionFees T ON US.UniversityName = T.UniversityName
+#             WHERE U.TuitionFeeBudget < (SELECT AVG(InStateTuitionFees) FROM TuitionFees);
+#         """
+#         cursor.execute(query1)
+#         result1 = cursor.fetchall()
+
+#         # Commit the transaction
+#         conn.commit()
+
+#         return jsonify({'result': result1, 'message': 'Transaction executed successfully!'}), 200
+
+#     except Exception as e:
+#         # Rollback the transaction in case of an error
+#         if conn:
+#             conn.rollback()
+#         return jsonify({'error': str(e)}), 500
+
+#     finally:
+#         if cursor:
+#             cursor.close()
+#         if conn:
+#             conn.close()
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
