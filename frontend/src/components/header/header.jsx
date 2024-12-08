@@ -16,6 +16,9 @@ const Header = () => {
   const handleAnalysis = () =>{
     navigate("/analysis");
   }
+  const handleMap = () =>{
+    navigate("/map");
+  }
 
   return (
     <header className="bg-light py-3 px-4">
@@ -46,6 +49,12 @@ const Header = () => {
                 onClick={handleAnalysis}
               >
                 Analysis
+              </button>
+              <button 
+                className="btn btn-outline ms-3"
+                onClick={handleMap}
+              >
+                Map
               </button>
               {/* <span className="fs-5">Hi, {username}!</span> */}
               <button

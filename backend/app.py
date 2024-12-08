@@ -253,7 +253,6 @@ def get_university_details(Id):
         # Fetch results from the first result set
         results = next(cursor.stored_results())
         universities_details = results.fetchall()
-        print(universities_details)
         return jsonify(universities_details), 200
 
     except Exception as e:
@@ -396,7 +395,7 @@ def get_top_diverse_universities():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Using execute instead of callproc
+        # Using execute insteadF of callproc
         query = f"CALL GetTopDiverseUniversities(%s, %s)"
         cursor.execute(query, (race_category, top_n))
         
@@ -432,6 +431,70 @@ def get_race_categories():
         if conn:
             conn.close()
 
+@app.route('/get_states_data', methods=['GET'])
+def get_states_data():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        query = """
+            SELECT 
+                SWE.State,
+                SWE.HousingCost,
+                SWE.FoodCost,
+                SWE.TransportationCost,
+                SWE.HealthcareCost,
+                COUNT(U.UniversityName) as TotalUniversities
+            FROM StateWiseExpense SWE
+            LEFT JOIN University U ON SWE.State = U.State
+            GROUP BY SWE.State, SWE.HousingCost, SWE.FoodCost, SWE.TransportationCost, SWE.HealthcareCost
+        """
+        
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/get_state_details/<state>', methods=['GET'])
+def get_state_details(state):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        query = """
+            SELECT 
+                SWE.State,
+                SWE.HousingCost,
+                SWE.FoodCost,
+                SWE.TransportationCost,
+                SWE.HealthcareCost,
+                U.UniversityName
+            FROM StateWiseExpense SWE
+            LEFT JOIN University U ON SWE.State = U.State
+            WHERE SWE.State = %s
+        """
+        
+        cursor.execute(query, (state,))
+        result = cursor.fetchall()
+        
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

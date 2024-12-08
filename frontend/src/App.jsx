@@ -9,8 +9,9 @@ import Analysis from './components/analysis/analysis';
 import MatchingUniversities from './components/matchingUnis/MatchingUniversities';
 import LivingCosts from './components/livingcosts/LivingCosts';
 import UserLogs from './components/userlogs/userlogs';
-import AdminPage from './components/Admin/AdminPage'; // Import AdminPage component
+import AdminPage from './components/Admin/AdminPage'; 
 import TopDiverseUniversities from './components/topDiversity/TopDiverseUniversities.jsx';
+import Map from './components/map/map.jsx';
 
 const App = () => {
   return (
@@ -24,8 +25,9 @@ const App = () => {
         <Route path="/analysis" element={<Analysis/>}/>
         <Route path="/living-costs/:userId" element={<LivingCosts />} />
         <Route path="/user-logs" element={<UserLogs />} />
-        <Route path="/admin" element={<AdminPage />} /> {/* New AdminPage route */}
+        <Route path="/admin" element={<AdminPage />} /> 
         <Route path="/top-diverse-universities" element={<TopDiverseUniversities />} />
+        <Route path="/map" element={<Map />} />
         <Route path="/" element={<h1>Welcome to Global Scholar!</h1>} />
         
       </Routes>
