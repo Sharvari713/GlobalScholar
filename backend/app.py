@@ -387,5 +387,51 @@ def get_user_logs(user_id):
         if conn:
             conn.close()
 
+@app.route('/top-diverse-universities', methods=['GET'])
+def get_top_diverse_universities():
+    race_category = request.args.get('raceCategory')
+    top_n = request.args.get('topN', default=10, type=int)
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Using execute instead of callproc
+        query = f"CALL GetTopDiverseUniversities(%s, %s)"
+        cursor.execute(query, (race_category, top_n))
+        
+        universities = cursor.fetchall()
+        print(f"Fetched {len(universities)} universities")
+
+        return jsonify(universities), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/race-categories', methods=['GET'])
+def get_race_categories():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        query = "SELECT DISTINCT RaceCategory FROM Diversity ORDER BY RaceCategory"
+        cursor.execute(query)
+        
+        categories = [row[0] for row in cursor.fetchall()]
+        return jsonify(categories), 200
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

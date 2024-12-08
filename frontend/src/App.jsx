@@ -10,6 +10,7 @@ import MatchingUniversities from './components/matchingUnis/MatchingUniversities
 import LivingCosts from './components/livingcosts/LivingCosts';
 import UserLogs from './components/userlogs/userlogs';
 import AdminPage from './components/Admin/AdminPage'; // Import AdminPage component
+import TopDiverseUniversities from './components/topDiversity/TopDiverseUniversities.jsx';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/living-costs/:userId" element={<LivingCosts />} />
         <Route path="/user-logs" element={<UserLogs />} />
         <Route path="/admin" element={<AdminPage />} /> {/* New AdminPage route */}
+        <Route path="/top-diverse-universities" element={<TopDiverseUniversities />} />
         <Route path="/" element={<h1>Welcome to Global Scholar!</h1>} />
         
       </Routes>

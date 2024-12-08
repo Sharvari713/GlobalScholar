@@ -128,6 +128,10 @@ const handleViewLogs = () => {
   navigate('/user-logs'); // Navigate to the User Logs page
 };
 
+const handleViewTopDiverseUniversities = () => {
+  navigate('/top-diverse-universities');
+};
+
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
@@ -139,6 +143,7 @@ const handleViewLogs = () => {
       <button onClick={handleViewLivingCosts}>View Living Costs</button>
 
       <button onClick={handleViewLogs}>View Logs</button>
+      <button onClick={handleViewTopDiverseUniversities}>View Top Diverse Universities</button>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
