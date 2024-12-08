@@ -17,6 +17,8 @@ const Dashboard = () => {
   const username = localStorage.getItem("user");
   const userId = localStorage.getItem("userId");
 
+  
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -118,6 +120,10 @@ const Dashboard = () => {
     navigate('/matching-universities');
   };
 
+  const handleViewLivingCosts = () => {
+    navigate(`/living-costs/${userId}`); // Navigate to Living Costs page with userId
+};
+
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
@@ -125,6 +131,8 @@ const Dashboard = () => {
 
       {errors.fetch && <p style={{ color: "red" }}>{errors.fetch}</p>}
       <button onClick={handleGetMatchingUniversities}>Get all matching universities</button>
+
+      <button onClick={handleViewLivingCosts}>View Living Costs</button>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
