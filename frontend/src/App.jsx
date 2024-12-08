@@ -9,6 +9,7 @@ import Analysis from './components/analysis/analysis';
 import MatchingUniversities from './components/matchingUnis/MatchingUniversities';
 import LivingCosts from './components/livingcosts/LivingCosts';
 import UserLogs from './components/userlogs/userlogs';
+import AdminPage from './components/Admin/AdminPage'; // Import AdminPage component
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/analysis" element={<Analysis/>}/>
         <Route path="/living-costs/:userId" element={<LivingCosts />} />
         <Route path="/user-logs" element={<UserLogs />} />
+        <Route path="/admin" element={<AdminPage />} /> {/* New AdminPage route */}
         <Route path="/" element={<h1>Welcome to Global Scholar!</h1>} />
         
       </Routes>

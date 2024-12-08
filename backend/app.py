@@ -46,52 +46,6 @@ def get_university_names():
     finally:
         cursor.close()
         conn.close()
-# Route for User Registration
-'''@app.route('/register', methods=['POST'])
-def register_user():
-    data = request.json
-    first_name = data.get('FirstName')
-    last_name = data.get('LastName')
-    email_id = data.get('EmailId')
-    password = data.get('Password')
-    tuition_fee_budget = data.get('TuitionFeeBudget', 0)
-    accommodation_budget = data.get('AccommodationBudget', 0)
-    selected_colleges = data.get('SelectedColleges', [])
-
-    # Check required fields
-    if not all([email_id, password, first_name]):
-        return jsonify({'error': 'Email, password, and first name are required!'}), 400
-
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        # Check if user already exists
-        cursor.execute("SELECT * FROM User WHERE EmailId = %s", (email_id,))
-        if cursor.fetchone():
-            return jsonify({'error': 'User already exists!'}), 409
-
-        # Insert new user into the User table
-        user_query = """
-            INSERT INTO User (FirstName, LastName, EmailId, Password, TuitionFeeBudget, AccommodationBudget)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(user_query, (first_name, last_name, email_id, password, tuition_fee_budget, accommodation_budget))
-        user_id = cursor.lastrowid
-
-        # Insert selected universities into User_UnivShortlist table
-        univ_query = "INSERT INTO User_UnivShortlist (UserId, UniversityName) VALUES (%s, %s)"
-        for college in selected_colleges:
-            cursor.execute(univ_query, (user_id, college))
-
-        conn.commit()
-        return jsonify({'message': 'User registered successfully!'}), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
-'''
 @app.route('/register', methods=['POST'])
 def register_user():
     data = request.json
@@ -285,35 +239,6 @@ def delete_universities():
         cursor.close()
         conn.close()
 
-
-# @app.route('/getUniversityDetails/<int:Id>', methods=['GET'])
-# def get_university_details(Id):
-#     try:
-#         # Connect to the database
-#         conn = get_db_connection()
-#         cursor = conn.cursor(buffered=True)
-
-#         sp_query = f"CALL GetUniversityDetails({Id});"
-
-#         cursor.execute(sp_query)
-#         while cursor.nextset():
-#             pass  
-#         results = cursor.fetchall()
-
-#         column_names = [desc[0] for desc in cursor.description]
-#         universities_details = [dict(zip(column_names, row)) for row in results]
-#         while cursor.nextset():
-#             pass
-
-#         print(universities_details)
-#         return jsonify(universities_details), 200
-
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
-#     finally:
-#         cursor.close()
-#         conn.close()
-
 @app.route('/getUniversityDetails/<int:Id>', methods=['GET'])
 def get_university_details(Id):
     conn = None
@@ -410,6 +335,35 @@ def get_user_living_costs(user_id):
         if conn:
             conn.close()
 
+@app.route('/university-details', methods=['GET'])
+def get_university_details_admin():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+            SELECT 
+                u.UniversityName, 
+                u.State,
+                tf.InStateTuitionFees,
+                tf.OutOfStateTuitionFees,
+                a.RoomAndBoardCost
+            FROM 
+                University u
+            LEFT JOIN 
+                TuitionFees tf ON u.UniversityName = tf.UniversityName
+            LEFT JOIN 
+                Accommodation a ON u.UniversityName = a.UniversityName
+        """
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        return jsonify(results), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/user-logs/<int:user_id>', methods=['GET'])
 def get_user_logs(user_id):
