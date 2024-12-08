@@ -124,6 +124,10 @@ const Dashboard = () => {
     navigate(`/living-costs/${userId}`); // Navigate to Living Costs page with userId
 };
 
+const handleViewLogs = () => {
+  navigate('/user-logs'); // Navigate to the User Logs page
+};
+
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
@@ -133,6 +137,8 @@ const Dashboard = () => {
       <button onClick={handleGetMatchingUniversities}>Get all matching universities</button>
 
       <button onClick={handleViewLivingCosts}>View Living Costs</button>
+
+      <button onClick={handleViewLogs}>View Logs</button>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>

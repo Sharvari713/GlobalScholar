@@ -8,6 +8,7 @@ import Dashboard from './components/dashBoard/dashBoard';
 import Analysis from './components/analysis/analysis';
 import MatchingUniversities from './components/matchingUnis/MatchingUniversities';
 import LivingCosts from './components/livingcosts/LivingCosts';
+import UserLogs from './components/userlogs/userlogs';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/matching-universities" element={<MatchingUniversities />} />
         <Route path="/analysis" element={<Analysis/>}/>
         <Route path="/living-costs/:userId" element={<LivingCosts />} />
+        <Route path="/user-logs" element={<UserLogs />} />
         <Route path="/" element={<h1>Welcome to Global Scholar!</h1>} />
         
       </Routes>

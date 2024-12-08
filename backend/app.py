@@ -389,5 +389,27 @@ def get_user_living_costs(user_id):
             conn.close()
 
 
+@app.route('/user-logs/<int:user_id>', methods=['GET'])
+def get_user_logs(user_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Query to fetch logs for the specified user
+        query = """
+            SELECT * FROM UserAudit WHERE UserId = %s ORDER BY Timestamp DESC
+        """
+        cursor.execute(query, (user_id,))
+        logs = cursor.fetchall()
+
+        return jsonify(logs), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
