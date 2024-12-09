@@ -13,18 +13,24 @@ const Header = () => {
     navigate("/login"); 
   };
 
-  const handleAnalysis = () =>{
+  const handleAnalysis = () => {
     navigate("/analysis");
-  }
-  const handleMap = () =>{
+  };
+
+  const handleMap = () => {
     navigate("/map");
-  }
+  };
+
+  const handleAdminPage = () => {
+    navigate("/admin"); // Navigate to the Admin Page
+  };
 
   return (
     <header className="bg-light py-3 px-4">
       <div className="container d-flex justify-content-between align-items-center">
         {/* Site Name */}
         <Link to="/dashboard" className="fs-3 fw-bold text-primary text-decoration-none">Global Scholar</Link>
+        
         {/* Conditionally render buttons or user's name */}
         <div>
           {!username ? (
@@ -56,7 +62,12 @@ const Header = () => {
               >
                 Map
               </button>
-              {/* <span className="fs-5">Hi, {username}!</span> */}
+              <button 
+                className="btn btn-outline ms-3"
+                onClick={handleAdminPage} // Button to go to Admin Page
+              >
+                Admin Page
+              </button>
               <button
                 className="btn btn-danger ms-3"
                 onClick={handleLogout}
