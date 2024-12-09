@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [universityOptions, setUniversityOptions] = useState([]); // All available universities
   const [editIndex, setEditIndex] = useState(null); 
   const [selectedUniversity, setSelectedUniversity] = useState(null); 
+  const [newUniversity, setNewUniversity] = useState(null);
 
   const username = localStorage.getItem("user");
   const userId = localStorage.getItem("userId");
@@ -53,6 +54,30 @@ const Dashboard = () => {
     }
     fetchUniversities();
   }, [userId]);
+
+  const handleAddUniversity = async () => {
+    if (!newUniversity) return;
+  
+    try {
+      const response = await axios.post('http://localhost:5001/addUniversity', {
+        userId,
+        universityName: newUniversity.value
+      });
+      if (response.status === 200) {
+        setUniversities([...universities, newUniversity.value]);
+        setNewUniversity(null);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          addUniversity: error.response.data.error
+        }));
+      } else {
+        console.error("Error adding university:", error);
+      }
+    }
+  };
 
   const handleEdit = (index) => {
     setEditIndex(index);
@@ -149,6 +174,18 @@ const handleRecommendUniversities = () => {
       <button onClick={handleViewLogs}>View Logs</button>
       <button onClick={handleViewTopDiverseUniversities}>View Top Diverse Universities</button>
       <button onClick={handleRecommendUniversities}>Recommend Universities</button>
+
+      <div>
+        <Select
+          options={universityOptions}
+          value={newUniversity}
+          onChange={setNewUniversity}
+          isSearchable
+          placeholder="Select a university to add"
+        />
+        <button onClick={handleAddUniversity}>Add University</button>
+        {errors.addUniversity && <p style={{ color: "red" }}>{errors.addUniversity}</p>}
+      </div>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>

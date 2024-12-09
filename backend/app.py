@@ -183,6 +183,34 @@ def get_user_info(id):
         cursor.close()
         conn.close()
 
+@app.route('/addUniversity', methods=['POST'])
+def add_university():
+    data = request.json
+    user_id = data.get('userId')
+    university_name = data.get('universityName')
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if the university is already in the user's shortlist
+        check_query = "SELECT * FROM User_UnivShortlist WHERE UserId = %s AND UniversityName = %s"
+        cursor.execute(check_query, (user_id, university_name))
+        if cursor.fetchone():
+            return jsonify({'error': 'University already in shortlist'}), 400
+
+        # Add the university to the user's shortlist
+        insert_query = "INSERT INTO User_UnivShortlist (UserId, UniversityName) VALUES (%s, %s)"
+        cursor.execute(insert_query, (user_id, university_name))
+        conn.commit()
+
+        return jsonify({'message': 'University added successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.route('/updateUniversity', methods=['POST'])
 def update_universities():
     data = request.json
