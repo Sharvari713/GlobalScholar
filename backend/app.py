@@ -183,6 +183,34 @@ def get_user_info(id):
         cursor.close()
         conn.close()
 
+@app.route('/addUniversity', methods=['POST'])
+def add_university():
+    data = request.json
+    user_id = data.get('userId')
+    university_name = data.get('universityName')
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if the university is already in the user's shortlist
+        check_query = "SELECT * FROM User_UnivShortlist WHERE UserId = %s AND UniversityName = %s"
+        cursor.execute(check_query, (user_id, university_name))
+        if cursor.fetchone():
+            return jsonify({'error': 'University already in shortlist'}), 400
+
+        # Add the university to the user's shortlist
+        insert_query = "INSERT INTO User_UnivShortlist (UserId, UniversityName) VALUES (%s, %s)"
+        cursor.execute(insert_query, (user_id, university_name))
+        conn.commit()
+
+        return jsonify({'message': 'University added successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.route('/updateUniversity', methods=['POST'])
 def update_universities():
     data = request.json
@@ -588,7 +616,86 @@ def get_transaction_result():
 #         if conn:
 #             conn.close()
 
+@app.route('/states', methods=['GET'])
+def get_states():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        query = "SELECT DISTINCT State FROM University ORDER BY State"
+        cursor.execute(query)
+        
+        states = [row[0] for row in cursor.fetchall()]
+        return jsonify(states), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
+@app.route('/recommend_universities', methods=['POST'])
+def recommend_universities():
+    user_id = request.json.get('userId')
+    preferred_state = request.json.get('preferredState')
+    diversity_importance = request.json.get('diversityImportance')  # 0 to 1
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
+        cursor.execute("START TRANSACTION")
+
+        cursor.execute("""
+            SELECT TuitionFeeBudget, AccommodationBudget
+            FROM User
+            WHERE Id = %s
+        """, (user_id,))
+        user_budget = cursor.fetchone()
+
+        cursor.execute("""
+            SELECT 
+                UC.UniversityName,
+                UC.State,
+                UC.TotalCost,
+                UC.DiversityScore,
+                ROUND((UC.StateMatch * 0.3 + 
+                 (1 - (UC.TotalCost / %s)) * 0.4 + 
+                 (UC.DiversityScore * %s) * 0.3),2) AS MatchScore
+            FROM (
+                SELECT 
+                    U.UniversityName,
+                    U.State,
+                    TF.OutOfStateTuitionFees + A.RoomAndBoardCost AS TotalCost,
+                    (SELECT ROUND(ABS(1 - SUM(POWER(RaceWiseEnrollment / TotalEnrollment, 2))),2)
+                    FROM Diversity D
+                    WHERE D.UniversityName = U.UniversityName
+                    GROUP BY D.UniversityName) AS DiversityScore,
+                    CASE WHEN U.State = %s THEN 1 ELSE 0 END AS StateMatch
+                FROM University U
+                JOIN TuitionFees TF ON U.UniversityName = TF.UniversityName
+                JOIN Accommodation A ON U.UniversityName = A.UniversityName
+            ) AS UC
+            WHERE UC.TotalCost <= %s
+            ORDER BY MatchScore DESC
+            LIMIT 10
+        """, (user_budget['TuitionFeeBudget'] + user_budget['AccommodationBudget'],
+              diversity_importance, preferred_state, 
+              user_budget['TuitionFeeBudget'] + user_budget['AccommodationBudget']))
+        
+        recommendations = cursor.fetchall()
+
+        cursor.execute("COMMIT")
+        return jsonify(recommendations), 200
+
+    except Exception as e:
+        cursor.execute("ROLLBACK")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
