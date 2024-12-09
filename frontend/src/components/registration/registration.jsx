@@ -132,7 +132,7 @@ const Register = () => {
       const response = await axios.post("http://localhost:5001/register", payload);
       if (response.status === 201) {
         alert("Registration successful!");
-        navigate("/dashboard");
+        navigate("/login");
       } else {
         alert(response.data.error || "Registration failed!");
       }
