@@ -132,6 +132,10 @@ const handleViewTopDiverseUniversities = () => {
   navigate('/top-diverse-universities');
 };
 
+const handleRecommendUniversities = () => {
+  navigate('/recommend-universities');
+};
+
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
@@ -144,6 +148,7 @@ const handleViewTopDiverseUniversities = () => {
 
       <button onClick={handleViewLogs}>View Logs</button>
       <button onClick={handleViewTopDiverseUniversities}>View Top Diverse Universities</button>
+      <button onClick={handleRecommendUniversities}>Recommend Universities</button>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>

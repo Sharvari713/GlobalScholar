@@ -12,6 +12,7 @@ import UserLogs from './components/userlogs/userlogs';
 import AdminPage from './components/Admin/AdminPage'; 
 import TopDiverseUniversities from './components/topDiversity/TopDiverseUniversities.jsx';
 import Lowerbudgettran from './components/Lowerbudgettran/Lowerbudgettran';
+import RecommendUniversities from './components/recommendUnis/RecommendUniversities.jsx';
 import Map from './components/map/map.jsx';
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/admin" element={<AdminPage />} /> 
         <Route path="/top-diverse-universities" element={<TopDiverseUniversities />} />
         <Route path="/Lowerbudgettran" element={<Lowerbudgettran />} />
+        <Route path="/recommend-universities" element={<RecommendUniversities />} />
         <Route path="/map" element={<Map />} />
         <Route path="/" element={<h1>Welcome to Global Scholar!</h1>} />
         
