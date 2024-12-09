@@ -364,17 +364,17 @@ def get_university_details_admin():
         cursor.close()
         conn.close()
 
-@app.route('/user-logs/<int:user_id>', methods=['GET'])
-def get_user_logs(user_id):
+@app.route('/user-logs', methods=['GET'])
+def get_user_logs():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
         # Query to fetch logs for the specified user
         query = """
-            SELECT * FROM UserAudit WHERE UserId = %s ORDER BY Timestamp DESC
+            SELECT * FROM UserAudit ORDER BY Timestamp DESC
         """
-        cursor.execute(query, (user_id,))
+        cursor.execute(query)
         logs = cursor.fetchall()
 
         return jsonify(logs), 200
@@ -385,6 +385,8 @@ def get_user_logs(user_id):
             cursor.close()
         if conn:
             conn.close()
+
+
 
 @app.route('/top-diverse-universities', methods=['GET'])
 def get_top_diverse_universities():

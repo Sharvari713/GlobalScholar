@@ -103,8 +103,18 @@ const AdminPage = () => {
     setUniversityToDelete(null);
   };
 
+  const handleViewLogs = () => {
+    navigate('/user-logs'); // Navigate to the User Logs page
+  };
+
   return (
     <div className="admin-page">
+
+<h1>User Logs</h1>
+
+<button onClick={handleViewLogs}>View Logs</button>
+<p></p>
+<p></p>
       <h1>Users with lower budget</h1>
 
       <button onClick={handleViewTransactionResult}>View Users</button>

@@ -124,9 +124,9 @@ const Dashboard = () => {
     navigate(`/living-costs/${userId}`); // Navigate to Living Costs page with userId
 };
 
-const handleViewLogs = () => {
-  navigate('/user-logs'); // Navigate to the User Logs page
-};
+// const handleViewLogs = () => {
+//   navigate('/user-logs'); // Navigate to the User Logs page
+// };
 
 const handleViewTopDiverseUniversities = () => {
   navigate('/top-diverse-universities');
@@ -142,7 +142,7 @@ const handleViewTopDiverseUniversities = () => {
 
       <button onClick={handleViewLivingCosts}>View Living Costs</button>
 
-      <button onClick={handleViewLogs}>View Logs</button>
+      {/* <button onClick={handleViewLogs}>View Logs</button> */}
       <button onClick={handleViewTopDiverseUniversities}>View Top Diverse Universities</button>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>

@@ -6,30 +6,31 @@ const UserLogs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const userId = localStorage.getItem("userId");
-
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/user-logs/${userId}`);
+        // Call the updated endpoint to fetch all logs
+        const response = await axios.get(`http://localhost:5001/user-logs`);
         setLogs(response.data);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching user logs:", err);
         setError("Failed to fetch user logs. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
 
     fetchLogs();
-  }, [userId]);
+  }, []);
+
+  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className="user-logs">
-      <h2>User Logs</h2>
+      <h2>All User Logs</h2>
       {logs.length > 0 ? (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -52,7 +53,7 @@ const UserLogs = () => {
           </tbody>
         </table>
       ) : (
-        <p>No logs found for this user.</p>
+        <p>No logs found.</p>
       )}
     </div>
   );
