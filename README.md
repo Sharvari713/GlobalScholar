@@ -15,7 +15,7 @@ Studying abroad can be financially overwhelming due to varying tuition fees, liv
 By combining real-world datasets with user inputs, GlobalScholar empowers students to make informed decisions and reduce uncertainty in their study-abroad journey.
 
 
-## 💡 Key Features
+## Key Features
 
 1. **User Registration & Profile Management**  
    Create personalized profiles including destination preferences, budget limits, and academic goals.
@@ -40,7 +40,7 @@ By combining real-world datasets with user inputs, GlobalScholar empowers studen
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React.js  
 - **Backend**: Python (Flask/Django)  
